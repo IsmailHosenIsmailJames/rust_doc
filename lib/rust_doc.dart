@@ -219,20 +219,15 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
     "cargo",
     "embedded-book",
     "rust-by-example",
-    "static.files",
     "style-guide",
     "alloc",
     "core",
-    "trait.impl",
     "edition-guide",
     "test",
     "rustc",
     "book",
-    "img",
     "unstable-book",
-    "src",
     "nomicon",
-    "type.impl"
   ];
 
   TextEditingController searchController = TextEditingController();
@@ -257,12 +252,10 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
             itemCount: listOfSurfaceFolders.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
-                return Container(
-                  height: 200,
-                  width: double.infinity,
+                return DrawerHeader(
                   child: Center(
                     child: Text(
-                      "Rust Doc",
+                      "RUST DOC",
                       style: TextStyle(
                         fontSize: 70,
                       ),
@@ -286,7 +279,9 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                               ),
                             ),
                           );
-                          Navigator.pop(context);
+                          if (Scaffold.of(context).isDrawerOpen) {
+                            Scaffold.of(context).closeEndDrawer();
+                          }
                         },
                         icon: Icon(Icons.file_open_sharp),
                         label: Text(
