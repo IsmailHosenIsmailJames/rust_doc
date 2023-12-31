@@ -209,6 +209,32 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
     });
   }
 
+  List<String> listOfSurfaceFolders = [
+    "reference",
+    "std",
+    "error_codes",
+    "proc_macro",
+    "rustdoc",
+    "clippy",
+    "cargo",
+    "embedded-book",
+    "rust-by-example",
+    "static.files",
+    "style-guide",
+    "alloc",
+    "core",
+    "trait.impl",
+    "edition-guide",
+    "test",
+    "rustc",
+    "book",
+    "img",
+    "unstable-book",
+    "src",
+    "nomicon",
+    "type.impl"
+  ];
+
   TextEditingController searchController = TextEditingController();
   TextEditingValue textEditingValue = TextEditingValue();
   bool showSearchBar = false;
@@ -226,7 +252,54 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
         }
       },
       child: Scaffold(
-        // drawer: Drawer(),
+        drawer: Drawer(
+          child: ListView.builder(
+            itemCount: listOfSurfaceFolders.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Container(
+                  height: 200,
+                  width: double.infinity,
+                  child: Center(
+                    child: Text(
+                      "Rust Doc",
+                      style: TextStyle(
+                        fontSize: 70,
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                return Padding(
+                  padding:
+                      EdgeInsets.only(left: 15, right: 15, top: 3, bottom: 3),
+                  child: Row(
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          webViewController?.loadUrl(
+                            urlRequest: URLRequest(
+                              url: WebUri(
+                                "file:///android_asset/flutter_assets/assets/" +
+                                    listOfSurfaceFolders[index] +
+                                    "/index.html",
+                              ),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.file_open_sharp),
+                        label: Text(
+                          listOfSurfaceFolders[index - 1],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+          ),
+        ),
         appBar: AppBar(
           toolbarHeight: 65,
           title: showSearchBar
