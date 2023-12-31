@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-
-import 'package:rust_doc/in_app_webiew_example.screen.dart';
+import 'package:rust_doc/rust_doc.dart';
 
 final localhostServer = InAppLocalhostServer(documentRoot: 'assets');
 

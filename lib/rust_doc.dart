@@ -264,50 +264,15 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                   scrollDirection: Axis.horizontal, child: Text(appBarTitile)),
           actions: [
             IconButton(
-                onPressed: () {
-                  setState(() {
-                    showSearchBar = !showSearchBar;
-                    appBarSeacrchIcon = Icons.arrow_forward_ios_rounded;
-                  });
-                },
-                icon: Icon(appBarSeacrchIcon)),
-            PopupMenuButton(
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  child: Row(
-                    children: [
-                      Text(
-                        "Set as your Home page",
-                      ),
-                    ],
-                  ),
-                  onTap: () async {
-                    final webUri = await webViewController?.getUrl();
-                    String currentURL = webUri.toString();
-                    final SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    await prefs.setString("home_page", currentURL);
-                    showToast("Set this as your Home page done.");
-                  },
-                ),
-                PopupMenuItem(
-                  child: Row(
-                    children: [
-                      Text(
-                        "Go to defult home page",
-                      ),
-                    ],
-                  ),
-                  onTap: () async {
-                    webViewController?.loadUrl(
-                      urlRequest: URLRequest(
-                        url: WebUri(
-                            "file:///android_asset/flutter_assets/assets/index.html"),
-                      ),
-                    );
-                  },
-                ),
-              ],
+              onPressed: () {
+                setState(() {
+                  showSearchBar = !showSearchBar;
+                  appBarSeacrchIcon = showSearchBar
+                      ? Icons.arrow_forward_ios_rounded
+                      : Icons.search;
+                });
+              },
+              icon: Icon(appBarSeacrchIcon),
             ),
           ],
         ),
@@ -365,6 +330,44 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                     ),
                   );
                 },
+              ),
+              PopupMenuButton(
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    child: Row(
+                      children: [
+                        Text(
+                          "Set as your Home page",
+                        ),
+                      ],
+                    ),
+                    onTap: () async {
+                      final webUri = await webViewController?.getUrl();
+                      String currentURL = webUri.toString();
+                      final SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      await prefs.setString("home_page", currentURL);
+                      showToast("Set this as your Home page done.");
+                    },
+                  ),
+                  PopupMenuItem(
+                    child: Row(
+                      children: [
+                        Text(
+                          "Go to defult home page",
+                        ),
+                      ],
+                    ),
+                    onTap: () async {
+                      webViewController?.loadUrl(
+                        urlRequest: URLRequest(
+                          url: WebUri(
+                              "file:///android_asset/flutter_assets/assets/index.html"),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
