@@ -9,12 +9,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class InAppWebViewExampleScreen extends StatefulWidget {
+  const InAppWebViewExampleScreen({super.key});
+
   @override
-  _InAppWebViewExampleScreenState createState() =>
-      _InAppWebViewExampleScreenState();
+  InAppWebViewExampleScreenState createState() =>
+      InAppWebViewExampleScreenState();
 }
 
-class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
+class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;
@@ -30,7 +32,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
   late ContextMenu contextMenu;
   String url = "";
   double progress = 0;
-  Widget initWiget = Center(
+  Widget initWiget = const Center(
     child: CircularProgressIndicator(),
   );
 
@@ -115,9 +117,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
             this.url = url.toString();
           });
         },
-        onConsoleMessage: (controller, consoleMessage) {
-          print(consoleMessage);
-        },
+        onConsoleMessage: (controller, consoleMessage) {},
       );
     });
   }
@@ -126,32 +126,17 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
   void initState() {
     super.initState();
     contextMenu = ContextMenu(
-        menuItems: [
-          ContextMenuItem(
-              id: 1,
-              title: "Special",
-              action: () async {
-                print("Menu item Special clicked!");
-                print(await webViewController?.getSelectedText());
-                await webViewController?.clearFocus();
-              })
-        ],
-        settings: ContextMenuSettings(hideDefaultSystemContextMenuItems: false),
-        onCreateContextMenu: (hitTestResult) async {
-          print("onCreateContextMenu");
-          print(hitTestResult.extra);
-          print(await webViewController?.getSelectedText());
-        },
-        onHideContextMenu: () {
-          print("onHideContextMenu");
-        },
-        onContextMenuActionItemClicked: (contextMenuItemClicked) async {
-          var id = contextMenuItemClicked.id;
-          print("onContextMenuActionItemClicked: " +
-              id.toString() +
-              " " +
-              contextMenuItemClicked.title);
-        });
+      menuItems: [
+        ContextMenuItem(
+            id: 1,
+            title: "Special",
+            action: () async {
+              await webViewController?.clearFocus();
+            })
+      ],
+      settings: ContextMenuSettings(hideDefaultSystemContextMenuItems: false),
+      onCreateContextMenu: (hitTestResult) async {},
+    );
 
     pullToRefreshController = kIsWeb ||
             ![TargetPlatform.iOS, TargetPlatform.android]
@@ -184,9 +169,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
   String appBarTitile = "";
 
   void makeAppBarTitle(String url) {
-    print(url);
     if (url.startsWith("file")) {
-      print("local");
       List partsOfURL = url.split("/");
       List toBeShow = partsOfURL.sublist(6);
       String showString = toBeShow.toString();
@@ -231,7 +214,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
   ];
 
   TextEditingController searchController = TextEditingController();
-  TextEditingValue textEditingValue = TextEditingValue();
+  TextEditingValue textEditingValue = const TextEditingValue();
   bool showSearchBar = false;
   IconData appBarSeacrchIcon = Icons.search;
   @override
@@ -240,7 +223,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
       canPop: false,
       onPopInvoked: (didPop) async {
         bool? canPop = await webViewController?.canGoBack();
-        if (canPop != null && canPop == true) {
+        if (canPop == true) {
           webViewController?.goBack();
         } else {
           SystemNavigator.pop();
@@ -252,43 +235,53 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
             itemCount: listOfSurfaceFolders.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
-                return DrawerHeader(
+                return const DrawerHeader(
+                  decoration: BoxDecoration(color: Colors.purple),
                   child: Center(
-                    child: Text(
-                      "RUST DOC",
-                      style: TextStyle(
-                        fontSize: 70,
-                      ),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 80,
+                          child: CircleAvatar(
+                            radius: 40,
+                            backgroundImage: AssetImage("assets/img/logo.png"),
+                          ),
+                        ),
+                        Text(
+                          "RUST DOC",
+                          style: TextStyle(
+                              fontSize: 40, fontWeight: FontWeight.w900),
+                        ),
+                      ],
                     ),
                   ),
                 );
               } else {
                 return Padding(
-                  padding:
-                      EdgeInsets.only(left: 15, right: 15, top: 3, bottom: 3),
-                  child: Row(
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          webViewController?.loadUrl(
-                            urlRequest: URLRequest(
-                              url: WebUri(
-                                "file:///android_asset/flutter_assets/assets/" +
-                                    listOfSurfaceFolders[index] +
-                                    "/index.html",
-                              ),
-                            ),
-                          );
-                          if (Scaffold.of(context).isDrawerOpen) {
-                            Scaffold.of(context).closeEndDrawer();
-                          }
-                        },
-                        icon: Icon(Icons.file_open_sharp),
-                        label: Text(
-                          listOfSurfaceFolders[index - 1],
+                  padding: const EdgeInsets.only(
+                      left: 15, right: 15, top: 3, bottom: 3),
+                  child: TextButton.icon(
+                    onPressed: () {
+                      webViewController?.loadUrl(
+                        urlRequest: URLRequest(
+                          url: WebUri(
+                            "file:///android_asset/flutter_assets/assets/${listOfSurfaceFolders[index]}/index.html",
+                          ),
                         ),
-                      ),
-                    ],
+                      );
+                      if (Scaffold.of(context).isDrawerOpen) {
+                        Scaffold.of(context).closeDrawer();
+                      }
+                    },
+                    icon: const Icon(Icons.folder),
+                    label: Row(
+                      children: [
+                        Text(
+                          listOfSurfaceFolders[index - 1],
+                          style: const TextStyle(fontSize: 22),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }
@@ -324,8 +317,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                     webViewController?.loadUrl(
                         urlRequest: URLRequest(
                             url: WebUri(
-                                "file:///android_asset/flutter_assets/assets/" +
-                                    selection)));
+                                "file:///android_asset/flutter_assets/assets/$selection")));
                   },
                 )
               : SingleChildScrollView(
@@ -367,31 +359,30 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
           label: Row(
             children: [
               IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () async {
                   await webViewController?.goBack();
                 },
               ),
               IconButton(
-                icon: Icon(Icons.arrow_forward),
+                icon: const Icon(Icons.arrow_forward),
                 onPressed: () async {
                   await webViewController?.goForward();
                 },
               ),
               IconButton(
-                icon: Icon(Icons.refresh),
+                icon: const Icon(Icons.refresh),
                 onPressed: () async {
                   await webViewController?.reload();
                 },
               ),
               IconButton(
-                icon: Icon(Icons.home),
+                icon: const Icon(Icons.home),
                 onPressed: () async {
                   final SharedPreferences prefs =
                       await SharedPreferences.getInstance();
                   String homePage = prefs.getString("home_page") ??
                       "file:///android_asset/flutter_assets/assets/index.html";
-                  print(homePage);
                   await webViewController?.loadUrl(
                     urlRequest: URLRequest(
                       url: WebUri(homePage),
@@ -402,7 +393,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
               PopupMenuButton(
                 itemBuilder: (context) => [
                   PopupMenuItem(
-                    child: Row(
+                    child: const Row(
                       children: [
                         Text(
                           "Set as your Home page",
@@ -419,7 +410,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                     },
                   ),
                   PopupMenuItem(
-                    child: Row(
+                    child: const Row(
                       children: [
                         Text(
                           "Go to defult home page",

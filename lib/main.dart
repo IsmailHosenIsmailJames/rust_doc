@@ -33,10 +33,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: ThemeMode.dark,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => InAppWebViewExampleScreen(),
-      },
+      home: InAppWebViewExampleScreen(),
     );
   }
 }
