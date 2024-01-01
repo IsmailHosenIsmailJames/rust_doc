@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:rust_doc/list_of_html_files.dart';
 import 'package:rust_doc/show_toast_messages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -159,6 +160,7 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
           );
 
     initLastWebUrl();
+    FlutterNativeSplash.remove();
   }
 
   @override
@@ -212,7 +214,6 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
     "unstable-book",
     "nomicon",
   ];
-
   TextEditingController searchController = TextEditingController();
   TextEditingValue textEditingValue = const TextEditingValue();
   bool showSearchBar = false;
@@ -265,7 +266,7 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                       webViewController?.loadUrl(
                         urlRequest: URLRequest(
                           url: WebUri(
-                            "file:///android_asset/flutter_assets/assets/${listOfSurfaceFolders[index]}/index.html",
+                            "file:///android_asset/flutter_assets/assets/${listOfSurfaceFolders[index - 1]}/index.html",
                           ),
                         ),
                       );
