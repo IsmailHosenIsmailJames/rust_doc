@@ -237,7 +237,7 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
             itemBuilder: (context, index) {
               if (index == 0) {
                 return const DrawerHeader(
-                  decoration: BoxDecoration(color: Colors.purple),
+                  decoration: BoxDecoration(color: Colors.blue),
                   child: Center(
                     child: Column(
                       children: [

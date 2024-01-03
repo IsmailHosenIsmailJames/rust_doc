@@ -6,7 +6,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:rust_doc/rust_doc.dart';
 
-final localhostServer = InAppLocalhostServer(documentRoot: 'assets');
+final localhostServer =
+    InAppLocalhostServer(documentRoot: 'assets', port: 9387);
 
 Future main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
