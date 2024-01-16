@@ -1,6 +1,6 @@
 # flutter_native_splash-development.yaml
 flutter_native_splash:
   color: "#ffffff"
-  image: assets/img/RustDoclight.png
+  image: assets\img\RustDoclight.jpg
   color_dark: "#000000"
-  image_dark: assets/img/RustDocDark.png
+  image_dark: assets\img\RustSTDSimplespalshdark.jpg

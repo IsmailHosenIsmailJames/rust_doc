@@ -39,7 +39,7 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
 
   void initLastWebUrl() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String initUrl = prefs.getString("last_url") ??
+    String initUrl = prefs.getString("last_url_doc") ??
         "file:///android_asset/flutter_assets/assets/index.html";
     makeAppBarTitle(initUrl);
     setState(() {
@@ -63,7 +63,7 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
           });
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           if (url != null) {
-            await prefs.setString("last_url", url.toString());
+            await prefs.setString("last_url_doc", url.toString());
           }
           makeAppBarTitle(url.toString());
         },
@@ -245,7 +245,7 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                           height: 80,
                           child: CircleAvatar(
                             radius: 40,
-                            backgroundImage: AssetImage("assets/img/logo.png"),
+                            backgroundImage: AssetImage("assets/img/logo.jpg"),
                           ),
                         ),
                         Text(
@@ -383,7 +383,7 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                 onPressed: () async {
                   final SharedPreferences prefs =
                       await SharedPreferences.getInstance();
-                  String homePage = prefs.getString("home_page") ??
+                  String homePage = prefs.getString("home_page_doc") ??
                       "file:///android_asset/flutter_assets/assets/index.html";
                   await webViewController?.loadUrl(
                     urlRequest: URLRequest(
@@ -407,7 +407,7 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                       String currentURL = webUri.toString();
                       final SharedPreferences prefs =
                           await SharedPreferences.getInstance();
-                      await prefs.setString("home_page", currentURL);
+                      await prefs.setString("home_page_doc", currentURL);
                       showToast("Set this as your Home page done.");
                     },
                   ),
