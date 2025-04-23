@@ -1,18 +1,20 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:rust_doc/files.dart';
 import 'package:rust_doc/rust_doc.dart';
 
-final localhostServer =
-    InAppLocalhostServer(documentRoot: 'assets', port: 9387);
+final localhostServer = InAppLocalhostServer(
+  documentRoot: 'assets',
+  port: 9387,
+);
 
 Future main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
+  WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
   }
@@ -20,6 +22,12 @@ Future main() async {
   if (!kIsWeb) {
     await localhostServer.start();
   }
+
+  allHTMLFilesPathSorted = List<String>.from(
+    jsonDecode(await rootBundle.loadString('assets/html_files.json')),
+  );
+
+  folderMap = jsonDecode(await rootBundle.loadString('assets/folder_map.json'));
 
   runApp(const MyApp());
 }

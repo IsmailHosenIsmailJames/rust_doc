@@ -1,0 +1,22 @@
+{
+
+    // Exclude the folder from VS Code's file watcher
+    // This is crucial for performance as it stops VS Code
+    // from monitoring these files for changes.
+    "files.watcherExclude": {
+        "**/assets/**": true
+        // Add other folders/patterns if needed
+        // "**/node_modules/**": true // Example
+    },
+
+    // Exclude the folder from search results
+    "search.exclude": {
+        "**/assets": true
+        // Add other folders/patterns if needed
+        // "**/node_modules": true // Example
+        // "**/bower_components": true // Example
+    }
+
+    // You might have other settings here already, just add these properties.
+    // Make sure the JSON structure remains valid (commas between properties, etc.)
+}
