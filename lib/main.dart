@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:rust_doc/files.dart';
-import 'package:rust_doc/rust_doc.dart';
+import 'package:rust_doc/src/resources/files.dart';
+import 'package:rust_doc/src/screens/home/home_page.dart';
 
 final localhostServer = InAppLocalhostServer(
   documentRoot: 'assets',
@@ -46,7 +46,7 @@ class MyAppState extends State<MyApp> {
       themeMode: ThemeMode.dark,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: const InAppWebViewExampleScreen(),
+      home: const HomePage(),
     );
   }
 }
