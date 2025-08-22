@@ -25,7 +25,7 @@ class _MyAppDrawerState extends State<MyAppDrawer> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 90,
+                    height: 70,
                     child: CircleAvatar(
                       radius: 40,
                       backgroundImage: AssetImage("assets/img/logo.png"),
@@ -33,10 +33,7 @@ class _MyAppDrawerState extends State<MyAppDrawer> {
                   ),
                   Text(
                     "RUST DOC",
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.w900,
-                    ),
+                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.w900),
                   ),
                 ],
               ),

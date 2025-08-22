@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:rust_doc/src/resources/database_helper.dart';
 import 'package:rust_doc/src/resources/files.dart';
 import 'package:rust_doc/src/screens/rust_doc.dart';
 
@@ -23,9 +24,7 @@ Future main() async {
     await localhostServer.start();
   }
 
-  allHTMLFilesPathSorted = List<String>.from(
-    jsonDecode(await rootBundle.loadString('assets/html_files.json')),
-  );
+  await DatabaseHelper().database;
 
   folderMap = jsonDecode(await rootBundle.loadString('assets/folder_map.json'));
 

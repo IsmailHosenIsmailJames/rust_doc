@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'package:dartx/dartx.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -7,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:rust_doc/src/resources/files.dart';
+import 'package:rust_doc/src/resources/database_helper.dart';
 import 'package:rust_doc/src/screens/drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -203,7 +202,6 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
   TextEditingValue textEditingValue = const TextEditingValue();
   bool showSearchBar = false;
   IconData appBarSeacrchIcon = Icons.search;
-  FocusNode focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -217,29 +215,28 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
         }
       },
       child: Scaffold(
-        drawer: MyAppDrawer(),
+        drawer: MyAppDrawer(webViewController: webViewController),
+
         appBar: AppBar(
           titleSpacing: 0,
           toolbarHeight: 43,
           title: Row(
             children: [
-              if (focusNode.ha)
-                IconButton(
-                  onPressed: () async {
-                    final SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    String homePage =
-                        prefs.getString("home_page_doc") ??
-                        "file:///android_asset/flutter_assets/assets/html/index.html";
-                    await webViewController?.loadUrl(
-                      urlRequest: URLRequest(url: WebUri(homePage)),
-                    );
-                  },
-                  icon: const Icon(FluentIcons.home_24_regular),
-                ),
+              IconButton(
+                onPressed: () async {
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  String homePage =
+                      prefs.getString("home_page_doc") ??
+                      "file:///android_asset/flutter_assets/assets/html/index.html";
+                  await webViewController?.loadUrl(
+                    urlRequest: URLRequest(url: WebUri(homePage)),
+                  );
+                },
+                icon: const Icon(FluentIcons.home_24_regular),
+              ),
               Expanded(
                 child: Autocomplete<String>(
-                  focusNode: focusNode,
                   optionsMaxHeight: 380,
                   fieldViewBuilder: (
                     context,
@@ -252,13 +249,12 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                       child: CupertinoSearchTextField(
                         controller: textEditingController,
                         focusNode: focusNode,
-                        onSubmitted: (value) {
-                          String? selectedFile = allHTMLFilesPathSorted
-                              .firstOrNullWhere((String option) {
-                                return option.toLowerCase().contains(
-                                  textEditingValue.text.toLowerCase(),
-                                );
-                              });
+                        onSubmitted: (value) async {
+                          List<String> results = await DatabaseHelper()
+                              .searchFiles(value);
+                          String? selectedFile =
+                              results.isNotEmpty ? results.first : null;
+
                           if (selectedFile == null) {
                             Fluttertoast.showToast(
                               msg: "No matching file found.",
@@ -279,15 +275,13 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                       ),
                     );
                   },
-                  optionsBuilder: (TextEditingValue textEditingValue) {
+                  optionsBuilder: (TextEditingValue textEditingValue) async {
                     if (textEditingValue.text == '') {
                       return const Iterable<String>.empty();
                     }
-                    return allHTMLFilesPathSorted.where((String option) {
-                      return option.toLowerCase().contains(
-                        textEditingValue.text.toLowerCase(),
-                      );
-                    });
+                    return await DatabaseHelper().searchFiles(
+                      textEditingValue.text,
+                    );
                   },
                   onSelected: (String selection) async {
                     webViewController?.loadUrl(

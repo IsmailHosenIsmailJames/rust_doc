@@ -41,6 +41,8 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   fluentui_system_icons: ^1.1.273
   dartx: ^1.2.0
+  sqflite: ^2.4.2
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +54,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  sqflite_common_ffi: ^2.3.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -67,6 +70,8 @@ flutter:
   assets:
     - assets/
     - assets/img/
+    - assets/html/
+    - assets/html_files.db
     - assets/html/.lock
     - assets/html/alloc/all.html
     - assets/html/alloc/alloc/fn.alloc.html
@@ -47225,3 +47230,4 @@ flutter:
     - assets/html/unstable-book/toc.html
     - assets/html/unstable-book/tomorrow-night-4c0ae647.css
     - assets/html/version_info.html
+  

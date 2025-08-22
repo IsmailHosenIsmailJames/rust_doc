@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -26,13 +25,17 @@ class FolderTreeView extends StatelessWidget {
       itemCount: data.length,
       itemBuilder: (context, index) {
         String key = data.keys.elementAt(index);
-        return _buildTreeItem(key, data[key], currentIndentation);
+        return _buildTreeItem(key, data[key], currentIndentation, context);
       },
     );
   }
 
   Widget _buildTreeItem(
-      String name, Map<String, dynamic> data, double currentIndentation) {
+    String name,
+    Map<String, dynamic> data,
+    double currentIndentation,
+    BuildContext context,
+  ) {
     bool hasChildren = data['children'] != null && data['children'].isNotEmpty;
 
     if (!hasChildren) {
@@ -46,10 +49,11 @@ class FolderTreeView extends StatelessWidget {
               webViewController?.loadUrl(
                 urlRequest: URLRequest(
                   url: WebUri(
-                    "http://localhost:9387/assets${data['index_path']}",
+                    "file:///android_asset/flutter_assets/assets${data['index_path']}",
                   ),
                 ),
               );
+              Navigator.pop(context);
             }
           },
         ),
@@ -73,7 +77,7 @@ class FolderTreeView extends StatelessWidget {
             webViewController?.loadUrl(
               urlRequest: URLRequest(
                 url: WebUri(
-                  "http://localhost:9387/assets${data['index_path']}",
+                  "file:///android_asset/flutter_assets/assets${data['index_path']}",
                 ),
               ),
             );
