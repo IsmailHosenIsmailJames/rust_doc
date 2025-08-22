@@ -1825,23 +1825,6 @@
             },
             "book": {
                 "parent": "/html",
-                "children": {
-                    "2018-edition": {
-                        "parent": "/html/book",
-                        "children": {},
-                        "index_path": "/html/book/2018-edition/index.html"
-                    },
-                    "first-edition": {
-                        "parent": "/html/book",
-                        "children": {},
-                        "index_path": "/html/book/first-edition/index.html"
-                    },
-                    "second-edition": {
-                        "parent": "/html/book",
-                        "children": {},
-                        "index_path": "/html/book/second-edition/index.html"
-                    }
-                },
                 "index_path": "/html/book/index.html"
             },
             "clippy": {

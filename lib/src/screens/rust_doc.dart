@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:developer';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -6,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:rust_doc/src/resources/database_helper.dart';
 import 'package:rust_doc/src/screens/drawer.dart';
+import 'package:rust_doc/src/screens/state_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -172,36 +175,21 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
     super.dispose();
   }
 
-  String appBarTitile = "";
-
   void makeAppBarTitle(String url) {
+    log("Loading : $url");
     if (url.startsWith("file")) {
-      List partsOfURL = url.split("/");
-      List toBeShow = partsOfURL.sublist(6);
-      String showString = toBeShow.toString();
-      showString = showString
-          .replaceAll(" ", "")
-          .replaceAll("[", "")
-          .replaceAll("]", "")
-          .replaceAll(",", "/");
-      setState(() {
-        appBarTitile = showString;
-      });
+      searchValue = url.split("flutter_assets/assets/html/").last;
     } else {
-      setState(() {
-        appBarTitile = url;
-      });
+      searchValue = url;
     }
-    setState(() {
-      showSearchBar = false;
-      appBarSeacrchIcon = Icons.search;
-    });
+    setState(() {});
   }
 
-  TextEditingController searchController = TextEditingController();
-  TextEditingValue textEditingValue = const TextEditingValue();
-  bool showSearchBar = false;
+  final getController = Get.put(StateController());
+
+  String searchValue = "";
   IconData appBarSeacrchIcon = Icons.search;
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -220,21 +208,25 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
         appBar: AppBar(
           titleSpacing: 0,
           toolbarHeight: 43,
+
           title: Row(
             children: [
-              IconButton(
-                onPressed: () async {
-                  final SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
-                  String homePage =
-                      prefs.getString("home_page_doc") ??
-                      "file:///android_asset/flutter_assets/assets/html/index.html";
-                  await webViewController?.loadUrl(
-                    urlRequest: URLRequest(url: WebUri(homePage)),
-                  );
-                },
-                icon: const Icon(FluentIcons.home_24_regular),
-              ),
+              Obx(() {
+                if (getController.isSearching.value) return SizedBox();
+                return IconButton(
+                  onPressed: () async {
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    String homePage =
+                        prefs.getString("home_page_doc") ??
+                        "file:///android_asset/flutter_assets/assets/html/index.html";
+                    await webViewController?.loadUrl(
+                      urlRequest: URLRequest(url: WebUri(homePage)),
+                    );
+                  },
+                  icon: const Icon(FluentIcons.home_24_regular),
+                );
+              }),
               Expanded(
                 child: Autocomplete<String>(
                   optionsMaxHeight: 380,
@@ -244,12 +236,35 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                     focusNode,
                     onFieldSubmitted,
                   ) {
-                    return SizedBox(
+                    textEditingController.text = searchValue;
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
                       height: 38,
-                      child: CupertinoSearchTextField(
+                      child: TextFormField(
                         controller: textEditingController,
                         focusNode: focusNode,
-                        onSubmitted: (value) async {
+                        onTap: () {
+                          getController.isSearching.value = true;
+                        },
+                        onTapOutside: (event) {
+                          focusNode.unfocus();
+                          getController.isSearching.value = false;
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Search...",
+                          border: InputBorder.none,
+                          prefixIcon: Icon(Icons.search),
+                          contentPadding: EdgeInsets.all(0),
+                          floatingLabelAlignment: FloatingLabelAlignment.center,
+                          maintainHintSize: false,
+                        ),
+                        textAlign: TextAlign.start,
+                        keyboardType: TextInputType.text,
+                        onFieldSubmitted: (value) async {
+                          getController.isSearching.value = false;
                           List<String> results = await DatabaseHelper()
                               .searchFiles(value);
                           String? selectedFile =
@@ -261,7 +276,6 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                             );
                             return;
                           }
-                          textEditingController.text = selectedFile;
                           webViewController?.loadUrl(
                             urlRequest: URLRequest(
                               url: WebUri(
@@ -269,6 +283,7 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                               ),
                             ),
                           );
+                          focusNode.unfocus();
                         },
 
                         style: const TextStyle(color: Colors.grey),
@@ -291,92 +306,104 @@ class InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                         ),
                       ),
                     );
+                    setState(() {});
                   },
                 ),
               ),
               const SizedBox(width: 5),
-              SizedBox(
-                height: 30,
-                width: 30,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () async {
-                    if (await webViewController!.canGoBack()) {
-                      webViewController!.goBack();
-                    }
-                  },
-                  icon: const Icon(Icons.arrow_back, size: 18),
-                ),
-              ),
-              SizedBox(
-                height: 30,
-                width: 30,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () async {
-                    if (await webViewController!.canGoForward()) {
-                      webViewController!.goForward();
-                    }
-                  },
-                  icon: const Icon(Icons.arrow_forward, size: 18),
-                ),
-              ),
-              SizedBox(
-                height: 30,
-                width: 40,
-                child: PopupMenuButton(
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (context) {
-                    return [
-                      PopupMenuItem(
-                        child: const Row(
-                          children: [
-                            Icon(FluentIcons.home_24_regular),
-                            SizedBox(width: 10),
-                            Text('Set as home'),
-                          ],
+              Obx(() {
+                if (getController.isSearching.value) return SizedBox();
+                return SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () async {
+                      if (await webViewController!.canGoBack()) {
+                        webViewController!.goBack();
+                      }
+                    },
+                    icon: const Icon(Icons.arrow_back, size: 18),
+                  ),
+                );
+              }),
+              Obx(() {
+                if (getController.isSearching.value) return SizedBox();
+                return SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () async {
+                      if (await webViewController!.canGoForward()) {
+                        webViewController!.goForward();
+                      }
+                    },
+                    icon: const Icon(Icons.arrow_forward, size: 18),
+                  ),
+                );
+              }),
+              Obx(() {
+                if (getController.isSearching.value) return SizedBox();
+                return SizedBox(
+                  height: 30,
+                  width: 40,
+                  child: PopupMenuButton(
+                    padding: EdgeInsets.zero,
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem(
+                          child: const Row(
+                            children: [
+                              Icon(FluentIcons.home_24_regular),
+                              SizedBox(width: 10),
+                              Text('Set as home'),
+                            ],
+                          ),
+                          onTap: () async {
+                            final webUri = await webViewController?.getUrl();
+                            String currentURL = webUri.toString();
+                            final SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            await prefs.setString("home_page_doc", currentURL);
+                            Fluttertoast.showToast(
+                              msg: "Set this as your Home page done.",
+                            );
+                          },
                         ),
-                        onTap: () async {
-                          final webUri = await webViewController?.getUrl();
-                          String currentURL = webUri.toString();
-                          final SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
-                          await prefs.setString("home_page_doc", currentURL);
-                          Fluttertoast.showToast(
-                            msg: "Set this as your Home page done.",
-                          );
-                        },
-                      ),
-                      PopupMenuItem(
-                        child: const Row(
-                          children: [
-                            Icon(Icons.restore),
-                            SizedBox(width: 10),
-                            Text('Reset home'),
-                          ],
-                        ),
-                        onTap: () async {
-                          webViewController?.loadUrl(
-                            urlRequest: URLRequest(
-                              url: WebUri(
-                                "file:///android_asset/flutter_assets/assets/html/index.html",
+                        PopupMenuItem(
+                          child: const Row(
+                            children: [
+                              Icon(Icons.restore),
+                              SizedBox(width: 10),
+                              Text('Reset home'),
+                            ],
+                          ),
+                          onTap: () async {
+                            webViewController?.loadUrl(
+                              urlRequest: URLRequest(
+                                url: WebUri(
+                                  "file:///android_asset/flutter_assets/assets/html/index.html",
+                                ),
                               ),
-                            ),
-                          );
+                            );
 
-                          final SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
-                          await prefs.setString(
-                            "home_page_doc",
-                            "file:///android_asset/flutter_assets/assets/html/index.html",
-                          );
-                          Fluttertoast.showToast(msg: "Home page reset done.");
-                        },
-                      ),
-                    ];
-                  },
-                ),
-              ),
+                            final SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            await prefs.setString(
+                              "home_page_doc",
+                              "file:///android_asset/flutter_assets/assets/html/index.html",
+                            );
+                            Fluttertoast.showToast(
+                              msg: "Home page reset done.",
+                            );
+                          },
+                        ),
+                      ];
+                    },
+                  ),
+                );
+              }),
             ],
           ),
         ),
